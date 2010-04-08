@@ -146,6 +146,21 @@ GetOptTest := UnitTest clone do(
         assertEquals(list(list("-a", "1")), getopt getoptGNU(args))
         assertEquals(list("arg1", "-b2", "arg2", "--def"), args)
     )
+
+    testShortcuts := method(
+        opts := Object getopt("a:b", "-a1 -b" split)
+        assertEquals(list(list("-a", "1"), list("-b", nil)), opts)
+
+        opts := Object getopt(nil, list("abc="), "--abc=test" split)
+        assertEquals(list(list("--abc", "test")), opts)
+
+        # getoptGNU is not tested, since the logic is 100% similar,
+        # it's only the method name that changes.
+    )
+
+    tearDown := method(
+        removeSlot("getopt")
+    )
 )
 
 if(isLaunchScript, GetOptTest run)

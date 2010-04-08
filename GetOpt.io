@@ -265,3 +265,38 @@ GetOpt := Object clone do(
 # ==> list(list("-a", "1"))
 # Io> args
 # ==> list("arg1", "arg2")
+
+Object do(
+    getopt := method(
+        args := call evalArgs
+        GetOpt performWithArgList(
+            "with", args slice(0, call argCount - 1)
+        ) getopt(args last)
+    ) doc(
+        """
+        Object getopt(shortlist, longlist, args) -> opts
+        Object getopt(shortlist, args) -> opts
+
+        Shortcut method, returns a list of arguments parsed with GetOpt's getopt().
+        """
+    )
+
+    getoptGNU := method(
+        args := call evalArgs
+        GetOpt performWithArgList(
+            "with", args slice(0, call argCount - 1)
+        ) getoptGNU(args last)
+    ) doc(
+        """
+        getoptGNU(shortlist, longlist, args) -> opts
+        getoptGNU(shortlist, args) -> opts
+
+        Shortcut method, returns a list of arguments parsed with GetOpt's getoptGNU().
+    """
+    )
+)
+
+# Usage example:
+# -------------
+# Io> getopt("a:b", "-a1 -b arg" split)
+# ==> list(list("-a", "1"), list("-b", nil))
