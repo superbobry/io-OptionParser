@@ -108,6 +108,9 @@ GetOptTest := UnitTest clone do(
 
         # The positional arguments should stay unchaged.
         assertEquals(list("arg1", "arg2"), args)
+
+        # Test case with no arguments given.
+        assertEquals(list(), getopt getopt(list()))
     )
 
     testGetoptGNU := method(
@@ -145,6 +148,9 @@ GetOptTest := UnitTest clone do(
         args := list("-a", "1", "arg1", "-b2", "arg2", "--def")
         assertEquals(list(list("-a", "1")), getopt getoptGNU(args))
         assertEquals(list("arg1", "-b2", "arg2", "--def"), args)
+
+        # Test case with no arguments given.
+        assertEquals(list(), getopt getoptGNU(list()))
     )
 
     testShortcuts := method(

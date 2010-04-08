@@ -178,6 +178,7 @@ GetOpt := Object clone do(
                 )
             )
         )
+        opts
     ) doc(
         """
         Parses command line options and parameter list from a given argument
