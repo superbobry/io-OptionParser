@@ -66,7 +66,7 @@ OptionList := List clone do(
 
 OptionParser := Object clone do(
     description ::= "(no description availible)"
-    usage ::= nil
+    usage ::= ""
 
     init := method(
         self options := OptionList clone with(
