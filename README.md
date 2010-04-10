@@ -6,20 +6,29 @@ hopefully makes writing command line tools a little easier.
 
 Quick example
 -------------
-    Io> parser := OptionParser with(
-    ...     list("n", "nonewline", false, "don't print a newline")
-    ... ) setUsage("%name [-n] MESSAGE")
-    
-    Io> parser help
-    echo.io [-n] MESSAGE
-    (no description availible)
+This is a trivial usage example:
+    OptionParser
+
+    echo := command(msg,
+        msg perform(
+            if(nonewline, "print", "println")
+        )
+    ) with(
+        list("n", "nonewline", false, "don't print a newline")
+    ) doc("A simple echo command.")
+
+    if(isLaunchScript, echo)
+
+Running the above script without any argument will bring up the help text:
+    % io example.io
+
+    A simple echo command.
 
     options:
 
-        -h --help       show help
-        -n --nonewline  don't print a newline
-        
-    Io> args := "-n Hello world!" split
-    ==> list(-n, Hello, world!)
-    Io> parser parse(args) asJson
-    ==> {"nonewline":true}
+      -h --help       show help
+      -n --nonewline  don't print a newline
+
+The number of positional arguments should match the number of arguments declared
+in the `command` body, since each declared argument gets binded to the corresponding 
+command line positional argument.

@@ -83,7 +83,7 @@ OptionParser := Object clone do(
     ) doc(
         """
         Creates a new OptionParser object with a given option list. Each option
-        is defined by a list of three arguments: short name (ex. "d"), long name
+        is defined by a list of four arguments: short name (ex. "d"), long name
         (ex. "debug"), default value (ex. true) and the description string,
         used for help output.
 
@@ -180,3 +180,75 @@ OptionParser := Object clone do(
         """
     )
 )
+
+Command := Object clone do(
+    newSlot("body")
+    newSlot("arguments")
+    newSlot("options", list())
+
+    execute := method(
+        args := System args
+        parser := OptionParser performWithArgList(
+            "with", options
+        ) setDescription(doc)
+
+        exc := try(parsedOptions := parser parse(args, true))
+        # The help string is displayed in three cases:
+        # a) an exception was raised during argument parsing.
+        # b) --help / -h option is provided,
+        # c) number of positional arguments doesn't match the
+        # number of command arguments,
+        help := exc or parsedOptions at("help") or \
+           (arguments isEmpty not and arguments size != args size)
+        if(help,
+            # FIXME: probably an appropriate error message should be
+            # displayed, like "Invalid arguments" or smth.
+            parser help
+        ,
+            # Creating the context object, the command body will
+            # be executed in. Postional arguments get binded to
+            # the corresponding command arguments, f.ex.
+            #     command(arg1, ...) and args := list(1)
+            # where arg1 will be set to 1, once the command is
+            # executed.
+            context := Object clone
+            context args := args
+
+            # Adding positional arguments to the context object.
+            arguments foreach(arg,
+                context setSlot(arg, args removeFirst)
+            )
+
+            # Adding parsed options to the context object ...
+            parsedOptions foreach(option, value,
+                context setSlot(option, value)
+            )
+
+            # ... and executing command body.
+            context doMessage(body)
+        )
+    )
+
+    with := method(
+        setOptions(call evalArgs)
+        self setIsActivatable(true)
+    )
+
+    activate := method(
+        # Yep, nasty hack, really :(
+        call sender getSlot(call message name) execute
+    )
+) doc(
+    """
+    Command object is responsible for marshaling arguments from the command
+    line to the locals of the command body.
+    """
+)
+
+command := method(
+    body := call argAt(call argCount - 1)
+    arguments := call message arguments slice(
+        0, call argCount - 1
+    ) map(asString)
+    Command clone setBody(body) setArguments(arguments)
+) doc("Shortcut method, creating a Command with a given message body and arguments.")

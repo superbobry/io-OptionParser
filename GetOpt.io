@@ -6,12 +6,12 @@
 # from Python's standart library.
 
 Object do(
-    doc := method(description,
-        if(description,
-            call target docstring := description
+    doc := method(
+        if(call argCount == 1,
+            call target setSlot("docstring", call evalArgAt(0))
             call target
         ,
-            call target description)
+            call target getSlot("docstring"))
     )
 )
 
