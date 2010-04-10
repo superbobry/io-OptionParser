@@ -184,13 +184,11 @@ OptionParser := Object clone do(
 Command := Object clone do(
     newSlot("body")
     newSlot("arguments")
-    newSlot("options", list())
+    newSlot("parser")
 
     execute := method(
         args := System args
-        parser := OptionParser performWithArgList(
-            "with", options
-        ) setDescription(doc)
+        parser setDescription(doc)
 
         exc := try(parsedOptions := parser parse(args, true))
         # The help string is displayed in three cases:
@@ -232,7 +230,7 @@ Command := Object clone do(
     )
 
     with := method(
-        setOptions(call evalArgs)
+        parser = OptionParser performWithArgList("with", call evalArgs)
         self setIsActivatable(true)
     )
 
@@ -243,7 +241,7 @@ Command := Object clone do(
             getSlot("cmd") execute
         ,
             getSlot("cmd") createContext(
-                call evalArgs
+                call evalArgs, getSlot("cmd") parser parse
             ) doMessage(getSlot("cmd") body)
         )
     )
