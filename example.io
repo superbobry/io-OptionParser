@@ -1,4 +1,7 @@
-OptionParser
+#!/usr/bin/env io
+# -*- coding: utf-8 -*-
+
+Command
 
 echo := command(msg,
     msg perform(if(nonewline, "print", "println"))

@@ -7,7 +7,7 @@ hopefully makes writing command line tools a little easier.
 Quick example
 -------------
 This is a trivial usage example:
-    OptionParser
+    Command
 
     echo := command(msg,
         msg perform(
