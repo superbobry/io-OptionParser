@@ -11,7 +11,7 @@ This is a trivial usage example:
 
     echo := command(msg,
         msg perform(
-            if(nonewline, "print", "println")
+            if(getSlot("nonewline"), "print", "println")
         )
     ) with(
         list("n", "nonewline", false, "don't print a newline")
@@ -32,3 +32,10 @@ Running the above script without any argument will bring up the help text:
 The number of positional arguments should match the number of arguments declared
 in the `command` body, since each declared argument gets binded to the corresponding 
 command line positional argument.
+
+Note, that `command`s can be executed as normal `method`s, with one restriction:
+default option values don't get added to the locals object, but that's most likely to 
+change in the future.
+
+    Io> echo("Hello world")
+    Hello world

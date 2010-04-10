@@ -198,35 +198,37 @@ Command := Object clone do(
         # b) --help / -h option is provided,
         # c) number of positional arguments doesn't match the
         # number of command arguments,
-        help := exc or parsedOptions at("help") or \
-           (arguments isEmpty not and arguments size != args size)
-        if(help,
+        if(exc or parsedOptions at("help") or \
+            (arguments isEmpty not and arguments size != args size),
             # FIXME: probably an appropriate error message should be
             # displayed, like "Invalid arguments" or smth.
             parser help
         ,
-            # Creating the context object, the command body will
-            # be executed in. Postional arguments get binded to
-            # the corresponding command arguments, f.ex.
-            #     command(arg1, ...) and args := list(1)
-            # where arg1 will be set to 1, once the command is
-            # executed.
-            context := Object clone
-            context args := args
-
-            # Adding positional arguments to the context object.
-            arguments foreach(arg,
-                context setSlot(arg, args removeFirst)
-            )
-
-            # Adding parsed options to the context object ...
-            parsedOptions foreach(option, value,
-                context setSlot(option, value)
-            )
-
-            # ... and executing command body.
-            context doMessage(body)
+            createContext(args, parsedOptions) doMessage(body)
         )
+    )
+
+    createContext := method(args, keywords,
+        # Creating the context object, the command body will
+        # be executed in. Postional arguments get binded to
+        # the corresponding command arguments, f.ex.
+        #     command(arg1, ...) and args := list(1)
+        # where arg1 will be set to 1, once the command is
+        # executed.
+        context := Object clone
+
+        # Adding positional ...
+        arguments foreach(arg,
+            context setSlot(arg, args removeFirst)
+        )
+
+        # ... and keyword arguments to the context object.
+        if(keywords isNil not,
+            keywords foreach(keyword, value,
+                context setSlot(keyword, value)
+            )
+        )
+        context
     )
 
     with := method(
@@ -235,8 +237,15 @@ Command := Object clone do(
     )
 
     activate := method(
-        # Yep, nasty hack, really :(
-        call sender getSlot(call message name) execute
+        cmd := call sender getSlot(call message name)
+        if(call argCount == 0,
+            # Yep, nasty hack, really :(
+            getSlot("cmd") execute
+        ,
+            getSlot("cmd") createContext(
+                call evalArgs
+            ) doMessage(getSlot("cmd") body)
+        )
     )
 ) doc(
     """
@@ -247,8 +256,6 @@ Command := Object clone do(
 
 command := method(
     body := call argAt(call argCount - 1)
-    arguments := call message arguments slice(
-        0, call argCount - 1
-    ) map(asString)
+    arguments := call message arguments slice(0, call argCount - 1) map(asString)
     Command clone setBody(body) setArguments(arguments)
 ) doc("Shortcut method, creating a Command with a given message body and arguments.")
