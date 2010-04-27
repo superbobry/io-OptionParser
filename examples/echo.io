@@ -1,6 +1,8 @@
 #!/usr/bin/env io
 # -*- coding: utf-8 -*-
 
+Importer addSearchPath("..")
+
 Command
 
 echo := command(msg,

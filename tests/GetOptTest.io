@@ -8,6 +8,38 @@ GetOptTest := UnitTest clone do(
         )
     )
 
+    testInit := method(
+        getopt := GetOpt clone
+        assertEquals("", getopt getLocalSlot("shortopts"))
+        assertEquals(list(), getopt getLocalSlot("longopts"))
+    )
+
+    testWith := method(
+        # Testing that nil values aren't being assigned.
+        getopt := GetOpt with
+        assertEquals("", getopt getLocalSlot("shortopts"))
+        assertEquals(list(), getopt getLocalSlot("longopts"))
+
+        getopt := GetOpt with(nil, nil)
+        assertEquals("", getopt getLocalSlot("shortopts"))
+        assertEquals(list(), getopt getLocalSlot("longopts"))
+
+        getopt := GetOpt with(nil, list("xyz"))
+        assertEquals("", getopt getLocalSlot("shortopts"))
+        assertEquals(list("xyz"), getopt getLocalSlot("longopts"))
+
+        getopt := GetOpt with("x", nil)
+        assertEquals("x", getopt getLocalSlot("shortopts"))
+        assertEquals(list(), getopt getLocalSlot("longopts"))
+
+        # Testing that values of the wrong type aren't being
+        # assigned as well.
+        getopt := GetOpt with(list(), "")
+        assertEquals("", getopt getLocalSlot("shortopts"))
+        assertEquals(list(), getopt getLocalSlot("longopts"))
+
+    )
+
     testShortHasArg := method(
         assertTrue(getopt shortHasArg("a"))
         assertTrue(getopt shortHasArg("b"))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # This object helps scripts to parse the command line arguments in
-# System.args. It supports the same conventions as the Unix getopt()
+# System args. It supports the same conventions as the Unix getopt()
 # function. Most of the code is ported from the getopt module
 # from Python's standart library.
 
@@ -16,11 +16,16 @@ Object do(
 )
 
 GetOpt := Object clone do(
-    shortopts ::= ""
-    longopts  ::= list()
+    init := method(
+        self shortopts := ""
+        self longopts  := list()
+    )
 
     with := method(shortopts, longopts,
-        self clone setLongopts(longopts) setShortopts(shortopts)
+        getopt := self clone
+        if(shortopts isKindOf(Sequence), getopt shortopts = shortopts)
+        if(longopts isKindOf(List), getopt longopts = longopts)
+        getopt
     ) doc(
         """
         Creates a new option parser object with the arguments given. The
