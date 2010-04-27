@@ -5,8 +5,9 @@ io-OptionParser
 hopefully makes writing command line tools a little easier.
 
 Command
--------------
-This is a trivial usage example:
+-------
+`Command` object is a convinient wrapper around `OptionParser`, let's get to the usage 
+example right away, since there's not much to describe:
 
     Command
 
@@ -61,7 +62,9 @@ Example:
     cat := method(
         parser := OptionParser with(
             list("n", "number", false, "show line numbers")
-        ) setDescription("A very simplified version of Unix `cat` command.")
+        ) setDescription(
+            "A very simplified version of Unix `cat` command."
+        ) setUsage("[-n] FILE")            
 
         args := System args rest
         opts := parser parse(args, true)
@@ -91,7 +94,8 @@ Example:
 The example above is a very simplified version of the Unix `cat` command, which is probably clear from the description string. Let's see it in action:
 
     % ./cat.io cat.io -h
-
+    cat.io [-n] FILE
+    
     A very simplified version of Unix `cat` command.
 
     options:
@@ -106,39 +110,33 @@ The example above is a very simplified version of the Unix `cat` command, which 
          1  Hello world!
          2  World Hello!
 
-Let's take the given example apart.
+### OptionParser with(option, option, ...) ###
+Creates a new OptionParser object for a given option list. Each option is defined by a 
+list of four arguments: short name (ex. `"d"`), long name (ex. `"debug"`), default value 
+(ex. `true`) and the description string, used for help output.
 
-#### Creating a parser ####
-Of course, you can simply clone the `OptionParser` object, but the prefered way of creating
-a new parser is through `OptionParser with()` method, which takes any number options as
-arguments.
-   
-    OptionParser with(option, option, option, ...)
+    Io> OptionParser with(
+        list("d", "debug", false, "output debug information")
+    )
 
-#### Defining options ####
-Each option is defined by a list of four arguments: short name (ex. `"d"`), long name
-(ex. `"debug"`), default value (ex. `true`) and the description string, used for help output.
+### OptionParser parse([*args*, [*gnu*]]) ###
+Parses a given list of arguments using `GetOpt` object, which is described below. 
+Depending on the *gnu* flag value, parsing is done either with `GetOpt getopt()`,
+or `GetOpt getoptGNU()` method. Parsed option values are coerced to the same types as
+their defaults, except for some special cases (see `tests/` for examples). Method returns 
+a `Map`, where the keys are option long names, and the values are the ones, returned by
+`getopt*()`, backed up, by the predefined defaults.
 
-    list("d", "debug", true, "output debug information")
+__IMPORTANT__: argument list is modified __in place__! 
 
-#### Parsing argument list ####
-Parsing is done via `OptionParser parse()` method which takes two arguments (both are optional):
+### OptionParser error([*message*]) ###
+If there's something wrong with the arguments, that your script has recieved, you may 
+use `OptionParser error()` method to print the error message and exit. If the message
+argument is absent `"invalid arguments"` is used.
 
-  * *args*, a list of command line arguments (if absent, `System args rest` is used)
-  * *gnu*,  if `true` the parsing is done using `getoptGNU()` method of the `GetOpt` object, which will be described later, else `getopt()` is used. 
-
-The return value is a `Map`, where the keys are option long names, and the values are the ones, 
-returned by `getopt*()`, backed up, by the predefined defaults.
-
-__IMPORTANT__: argument list is modified __in place__, so after parsing is finished, all the unparsed 
-arguments are contained in the arg list passed in, or in `System args` if no list was passed.
-
-#### Got errors? ####
-If there's something wrong with the arguments, your script has recieved, you can use `OptionParser error()`
-method to print the error message and exit (with status 1).
-
-    parser error("invalid arguments")
-
+### OptionParser help ###
+Outputs a help string, using `description`, `usage` and a list of `options` the parser
+was initialized with.
 
 
 GetOpt

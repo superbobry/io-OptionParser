@@ -6,7 +6,9 @@ Importer addSearchPath("..")
 cat := method(
     parser := OptionParser with(
         list("n", "number", false, "show line numbers")
-    ) setDescription("A very simplified version of Unix `cat` command.")
+    ) setDescription(
+        "A very simplified version of Unix `cat` command."
+    ) setUsage("%name [-n] FILE")
 
     args := System args rest
     opts := parser parse(args, true)

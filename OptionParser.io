@@ -96,7 +96,12 @@ OptionParser := Object clone do(
     )
 
     help := method(
-        usage asMutable replaceSeq("%name", System launchScript) println
+        if(usage size,
+            usage asMutable replaceSeq(
+                "%name", System launchScript lastPathComponent
+            ) println
+        )
+        "" println
         description println
         "\noptions:\n" println
         options println
