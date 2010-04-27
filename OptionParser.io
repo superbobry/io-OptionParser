@@ -102,10 +102,19 @@ OptionParser := Object clone do(
         options println
     ) doc("Prints out help string.")
 
+    error := method(error,
+        if(error,
+            "Error: #{error}" interpolate
+        ,
+            "Error: invalid arguments" # is it okay to have this as default?
+        ) println
+        System exit(1)
+    ) doc("Prints out a given error message and exits.")
+
     parse := method(args, gnu,
         # Extracting args from the System object if they aren't provided
         # and removing script filename from the resulting list.
-        args = if(args isNil, System args, args) remove(System launchScript)
+        args = if(args isNil, System args rest, args)
 
         # Using mercurial approach: read args, parse options and store
         # options in a state.
