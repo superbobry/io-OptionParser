@@ -208,3 +208,9 @@ Using long options:
     ==> list(--foo=bar, --cond)
     Io> GetOpt with("", list("foo=", "cond")) getopt(args)
     ==> list(list(--foo, bar), list(--cond, nil))
+
+
+Thanks!
+======
+
+Major thanks to [Alexander Solovyov](http://piranha.org.ua/en/) for his nifty [opster](http://pypi.python.org/pypi/opster/0.9.9) library which was my inspiration for writing an option parser, and to [Mercurial](http://mercurial.selenic.com/) team, who ispired Alexander, in their turn :).
