@@ -111,12 +111,4 @@ OptionParserTest := UnitTest clone do(
     )
 )
 
-if(isLaunchScript,
-    # FIXME: this should be a TestSuite method!
-    TestRunner clone do(
-        prepare := method(
-            list(OptionTest, OptionParserTest) foreach(test,
-                self cases atPut(test type, test testSlotNames)
-        )
-    )
-) run)
+if(isLaunchScript, FileCollector clone run)
